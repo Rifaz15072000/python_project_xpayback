@@ -1,0 +1,67 @@
+#version: '3'
+#services:
+#  app:
+#    build: flask
+#    volumes:
+#      - app:/app
+#    ports:
+#      - "8000:8000"
+#    links:
+#      - redis:redis
+#    depends_on:
+#      - redis
+#  redis:
+#    image: "redis:alpine"
+#    expose:
+#      - "6379"
+#  proxy:
+#    build: nginx
+#    restart: always
+#    ports:
+#      - 80:80
+#    depends_on:
+#      - app
+#volumes:
+#  app:
+
+version: '3'
+services:
+  app:
+    build: flask
+    volumes:
+      - app:/app
+    ports:
+      - "8000:8000"
+    links:
+      - redis:redis
+    depends_on:
+      - redis
+  redis:
+    image: "redis:alpine"
+    expose:
+      - "6379"
+  proxy:
+    build: nginx
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      - app
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - jenkins_network
+
+networks:
+  jenkins_network:
+
+volumes:
+  app:
+  jenkins_home:
+
